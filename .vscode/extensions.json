@@ -1,8 +1,8 @@
 {
-	"recommendations": [
-        "ms-dotnettools.vscode-dotnet-runtime",
-        "ms-dotnettools.csharp",
-        "ms-dotnettools.csdevkit",
-        "jorgeserrano.vscode-csharp-snippets"
-	]
+  "recommendations": [
+    "ms-dotnettools.vscode-dotnet-runtime",
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.csdevkit",
+    "jorgeserrano.vscode-csharp-snippets"
+  ]
 }
