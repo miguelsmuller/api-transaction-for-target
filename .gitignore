@@ -1,5 +1,8 @@
 app/[Bb]in/
 app/*.sln
+app/out
+app/.env
+app/*.db
 
 # Created by https://www.toptal.com/developers/gitignore/api/aspnetcore,csharp
 # Edit at https://www.toptal.com/developers/gitignore?templates=aspnetcore,csharp

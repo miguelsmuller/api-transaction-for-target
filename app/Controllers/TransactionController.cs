@@ -7,6 +7,28 @@ using finance_api.Data.Dtos;
 
 namespace finance_api.Controllers;
 
+
+[ApiController]
+[Route("")]
+public class BaseController : ControllerBase
+{
+    /// <summary>
+    /// Rota /health que retorna um JSON com a mensagem e status.
+    /// </summary>
+    /// <returns>Um JSON com mensagem e status.</returns>
+    [HttpGet("health")]
+    public IActionResult HealthCheck()
+    {
+        var response = new
+        {
+            message = "Welcome to .NET and C#",
+            status = "success"
+        };
+        return Ok(response);
+    }
+}
+
+
 [ApiController]
 [Route("[controller]")]
 public class TransactionController : ControllerBase
@@ -23,7 +45,7 @@ public class TransactionController : ControllerBase
     /// <summary>
     /// Adiciona um filme ao banco de dados
     /// </summary>
-    /// <param name="filmeDto">Objeto com os campos necessários para criação de um filme</param>
+    /// <param name="transactionDTO">Objeto com os campos necessários para criação de um filme</param>
     /// <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPost]
@@ -37,8 +59,8 @@ public class TransactionController : ControllerBase
         _ctx.SaveChanges();
 
         return CreatedAtAction(
-            nameof(GetTransactionByID), 
-            new {id = transaction.ID}, 
+            nameof(GetTransactionByID),
+            new {id = transaction.ID},
             transaction
         );
     }
@@ -52,11 +74,20 @@ public class TransactionController : ControllerBase
     /// <returns>Uma lista de transações</returns>
     [HttpGet]
     public IEnumerable<ReadTransactionDTO> GetTransactions(
-        [FromQueryAttribute] int skip = 0, 
-        [FromQueryAttribute] int take = 10
+        [FromQueryAttribute] int skip = 0,
+        [FromQueryAttribute] int take = 10,
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null
     ){
+        DateTime startDateSet = startDate ?? DateTime.Now.AddMonths(-1);
+        DateTime endDateSet = endDate ?? DateTime.Now;
+
+
         return _mapper.Map<List<ReadTransactionDTO>>(
-            _ctx.Transactions.Skip(skip).Take(take)
+            _ctx.Transactions
+            .Where(transaction => transaction.Data >= startDateSet && transaction.Data <= endDateSet)
+            .Skip(skip)
+            .Take(take)
         );
     }
 
@@ -101,7 +132,7 @@ public class TransactionController : ControllerBase
 
         _ctx.SaveChanges();
 
-        return NoContent(); 
+        return NoContent();
     }
 
     /// <summary>
@@ -133,7 +164,7 @@ public class TransactionController : ControllerBase
 
         _ctx.SaveChanges();
 
-        return NoContent(); 
+        return NoContent();
     }
 
 
@@ -153,6 +184,6 @@ public class TransactionController : ControllerBase
         _ctx.Remove(transaction);
         _ctx.SaveChanges();
 
-        return NoContent(); 
+        return NoContent();
     }
 }

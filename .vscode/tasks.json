@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/api/finance-api.csproj",
+        "${workspaceFolder}/app/finance-app.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/api/finance-api.csproj",
+        "${workspaceFolder}/app/finance-app.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -33,7 +33,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/api/finance-api.csproj"
+        "${workspaceFolder}/app/finance-app.csproj"
       ],
       "problemMatcher": "$msCompile"
     }

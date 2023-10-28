@@ -10,7 +10,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/api/bin/Debug/net6.0/finance-api.dll",
+      "program": "${workspaceFolder}/app/bin/Debug/net6.0/finance-app.dll",
       "args": [],
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,
@@ -23,7 +23,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sourceFileMap": {
-        "/Views": "${workspaceFolder}/api/Views"
+        "/Views": "${workspaceFolder}/app/Views"
       }
     },
     {

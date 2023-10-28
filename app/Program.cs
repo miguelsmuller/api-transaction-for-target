@@ -2,17 +2,22 @@ using finance_api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Do Pacote DotNetEnv
+Env.Load();
+
+var connectionStringFromApp = builder.Configuration.GetConnectionString("DBEngineConnection");
+var connectionStringFromEnv = Environment.GetEnvironmentVariable("DBEngineConnection");
+
+builder.Configuration["ConnectionStrings:DBEngineConnection"] = connectionStringFromEnv ?? connectionStringFromApp;
 var connectionString = builder.Configuration.GetConnectionString("DBEngineConnection");
 
 // Do Pacote Entity
 builder.Services.AddDbContext<TransactionContext>(
-    opts => opts.UseMySql(
-        connectionString, 
-        ServerVersion.AutoDetect(connectionString)
-    )
+    opts => opts.UseSqlite(connectionString)
 );
 
 // Do pacote AutoMapper
@@ -42,6 +47,17 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.UseCors(options =>
+    {
+//         options.WithOrigins("http://seufrontend.com")
+//             .AllowAnyHeader()
+//             .AllowAnyMethod();
+
+        options.AllowAnyOrigin()
+           .AllowAnyHeader()
+           .AllowAnyMethod();
+    });
 }
 
 app.UseHttpsRedirection();
