@@ -132,7 +132,7 @@ public class TransactionController : ControllerBase
 
         _ctx.SaveChanges();
 
-        return NoContent();
+        return Ok(transaction);
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public class TransactionController : ControllerBase
 
         _ctx.SaveChanges();
 
-        return NoContent();
+        return Ok(transaction);
     }
 
 

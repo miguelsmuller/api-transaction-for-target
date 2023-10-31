@@ -46,6 +46,11 @@ stop-image:
     docker rm -f api-target-transaction
 
 
+## tag-image
+tag-image:
+	docker tag miguelsmuller/api-target-transaction miguelsmuller/api-target-transaction:1.0.0
+
+
 ## publish-image
 publish-image:
-	docker tag api-target-transaction miguelsmuller/api-target-transaction:1.0.0
+	docker push miguelsmuller/api-target-transaction:1.0.0

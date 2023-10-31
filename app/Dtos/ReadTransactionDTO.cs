@@ -4,7 +4,7 @@ namespace finance_api.Data.Dtos;
 
 public class ReadTransactionDTO
 {
-    public string ID {get; set;}
+    public int ID {get; set;}
 
     public string Descricao {get; set;}
 
