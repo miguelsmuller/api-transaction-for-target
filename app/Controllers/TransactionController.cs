@@ -86,6 +86,7 @@ public class TransactionController : ControllerBase
         return _mapper.Map<List<ReadTransactionDTO>>(
             _ctx.Transactions
             .Where(transaction => transaction.Data >= startDateSet && transaction.Data <= endDateSet)
+            .OrderBy(transaction => transaction.Data)
             .Skip(skip)
             .Take(take)
         );
