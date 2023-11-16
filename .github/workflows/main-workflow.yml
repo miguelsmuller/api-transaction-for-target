@@ -1,0 +1,92 @@
+name: Main Workflow
+
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+  NAME: "api-target-transaction"
+  NAME_IMG: "miguelsmuller/api-target-transaction"
+  GCE_NAME_INST: "vm-base"
+  GCE_ZONE_INST: "us-west1-a"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Unit Tests
+      run: |
+        echo "This step is dedicated to running unit tests for the project"
+        echo "Starting the execution of unit tests"
+    - name: Debug Info
+      run: |
+        echo "${{ github.sha }}"
+        echo "${{ env.NAME }}"
+        echo "${{ env.NAME_IMG }}"
+        echo "${{ env.GCE_NAME_INST }}"
+        echo "${{ env.GCE_ZONE_INST }}"
+
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Check out repo's default branch
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.NAME_IMG }}:${{ github.sha }}, ${{ env.NAME_IMG }}:latest
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repo's default branch
+      uses: actions/checkout@v4
+
+    - name: 'Google auth'
+      id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+
+    - name: Manage Containers on VM
+      id: 'compute-ssh'
+      uses: 'google-github-actions/ssh-compute@v0'
+      with:
+        instance_name: '${{ env.GCE_NAME_INST }}'
+        zone: '${{ env.GCE_ZONE_INST }}'
+        ssh_private_key: '${{ secrets.GOOGLE_COMPUTE_SSH_KEY }}'
+        user: miguelsmuller
+        command: |-
+          docker ps
+          docker rm -f ${{ env.NAME }}
+          docker pull ${{ env.NAME_IMG }}:${{ github.sha }}
+          docker run --name ${{ env.NAME }} -p 5028:5028 -e DBEngineConnection="Data Source=transactions.db" -d -it ${{ env.NAME_IMG }}:${{ github.sha }}
+
+    - name: 'Output from Compute Engine'
+      run: |-
+        echo 'STDOUT'
+        echo '${{ steps.compute-ssh.outputs.stdout }}'
+        echo 'STDERR'
+        echo '${{ steps.compute-ssh.outputs.stderr }}'

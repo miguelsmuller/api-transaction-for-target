@@ -8,7 +8,7 @@ RUN dotnet publish -c Release -o /publish
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS migrate
 WORKDIR /app
 COPY ./app ./
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef --version 7.0.10
 RUN echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> $HOME/.bashrc
 ENV PATH="/root/.dotnet/tools:${PATH}"
 RUN dotnet ef database update
